@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const themeSelect = document.getElementById('theme-select');
     const designSelect = document.getElementById('design-select');
     const storageBase = form.dataset.storageBase || '';
+    const fallbackImage = form.dataset.fallbackImage || '';
     const templates = {
         skills: 'skills-template',
         projects: 'projects-template',
@@ -15,6 +16,28 @@ document.addEventListener('DOMContentLoaded', function () {
         education: 'education-template'
     };
     const filePreviewUrls = new WeakMap();
+
+    function addSkillCategoryOption(category) {
+        const value = String(category || '').trim();
+        if (!value) return;
+
+        const template = document.getElementById('skills-template');
+        const selects = Array.from(document.querySelectorAll('#skills-rows [data-item-field="category"]'));
+        const templateSelect = template?.content.querySelector('[data-item-field="category"]');
+        if (templateSelect) selects.push(templateSelect);
+
+        selects.forEach(function (select) {
+            const exists = Array.from(select.options).some(function (option) {
+                return option.value.toLowerCase() === value.toLowerCase();
+            });
+            if (exists) return;
+
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            select.append(option);
+        });
+    }
 
     function filePreviewUrl(file) {
         if (!file) return '';
@@ -240,6 +263,18 @@ document.addEventListener('DOMContentLoaded', function () {
             padding-left: 0;
             padding-right: 0;
         }
+
+        main.page .skill-list { gap: 18px; }
+        main.page .skill-group { display: grid; grid-template-columns: minmax(125px, .32fr) 1fr; align-items: start; gap: 18px; padding: 0 0 18px; border-bottom: 1px solid var(--line); }
+        main.page .skill-group:last-child { padding-bottom: 0; border-bottom: 0; }
+        main.page .skill-group-title { margin: 5px 0 0; color: var(--muted); font-size: 11px; letter-spacing: .1em; line-height: 1.5; text-transform: uppercase; }
+        main.page .skill-chips { display: flex; flex-wrap: wrap; gap: 9px; }
+        main.page .skill-chip { display: inline-flex; align-items: center; gap: 11px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); }
+        main.page .skill-chip b { font-size: 13px; }
+        main.page .skill-chip small { color: var(--muted); font-size: 10px; }
+        @media (max-width: 600px) {
+            main.page .skill-group { grid-template-columns: 1fr; gap: 9px; }
+        }
     `;
 
     function escapeHtml(value) {
@@ -276,6 +311,21 @@ document.addEventListener('DOMContentLoaded', function () {
         const education = readRows('education').filter(function (row) { return row.institution || row.degree; });
         const name = getField('full_name') || 'Your Name';
         const headline = getField('headline') || 'Developer';
+        const skillGroups = new Map();
+
+        skills.forEach(function (skill) {
+            const category = String(skill.category || '').trim() || 'Other';
+            if (!skillGroups.has(category)) skillGroups.set(category, []);
+            skillGroups.get(category).push(skill);
+        });
+
+        const skillContent = Array.from(skillGroups.entries()).map(function ([category, items]) {
+            const chips = items.map(function (item) {
+                return '<span class="skill-chip" data-skill data-name="' + escapeHtml(item.name) + '" data-category="' + escapeHtml(item.category) + '" data-proficiency="' + escapeHtml(item.proficiency) + '"><b data-item-name>' + escapeHtml(item.name) + '</b><small data-item-proficiency>' + escapeHtml(item.proficiency) + '%</small></span>';
+            }).join('');
+
+            return '<div class="skill-group"><h3 class="skill-group-title">' + escapeHtml(category) + '</h3><div class="skill-chips">' + chips + '</div></div>';
+        }).join('');
 
         return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title data-field="portfolio_title">' + escapeHtml(getField('portfolio_title') || 'My portfolio') + '</title><style>' + (themeCss[theme] || themeCss.light) + (designCss[design] || designCss.studio) + unboxedDesignCss + '</style></head><body><main class="page" data-theme="' + theme + '" data-design="' + design + '">' +
             '<header class="hero"><div class="cover" data-cover style="background-image:url(\'%%COVER%%\')"></div><div class="avatar-wrap"><img class="avatar" src="%%AVATAR%%" alt="Profile photo"></div><span class="eyebrow" data-field="headline">' + escapeHtml(headline) + '</span><h1 data-field="full_name">' + escapeHtml(name) + '</h1><p data-field="bio">' + escapeHtml(getField('bio') || 'Add a short introduction in the editor.') + '</p><div class="links">' +
@@ -284,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function () {
             (getField('phone') ? '<span data-field="phone">' + escapeHtml(getField('phone')) + '</span>' : '') +
             ['github_url', 'linkedin_url', 'website_url'].map(function (key) { return getField(key) ? '<a data-field="' + key + '" data-value="' + escapeHtml(getField(key)) + '" href="' + escapeHtml(getField(key)) + '">' + key.replace('_url', '').replace('_', ' ') + ' ↗</a>' : ''; }).join('') +
             '</div></header>' +
-            section('Skills', 'skills', skills.map(function (item) { return '<div class="skill" data-skill data-name="' + escapeHtml(item.name) + '" data-category="' + escapeHtml(item.category) + '" data-proficiency="' + escapeHtml(item.proficiency) + '"><span><b data-item-name>' + escapeHtml(item.name) + '</b> <small data-item-category>' + escapeHtml(item.category) + '</small></span><small data-item-proficiency>' + escapeHtml(item.proficiency) + '%</small></div>'; }).join('')) +
+            section('Skills', 'skills', skillContent) +
             section('Selected projects', 'projects', projects.map(projectCard).join('')) +
             section('Experience', 'experiences', experiences.map(function (item) { return '<article class="timeline-item" data-experience data-role="' + escapeHtml(item.role) + '" data-company="' + escapeHtml(item.company) + '" data-description="' + escapeHtml(item.description) + '" data-start-date="' + escapeHtml(item.start_date) + '" data-end-date="' + escapeHtml(item.end_date) + '" data-current-job="' + (item.current_job ? '1' : '0') + '"><h3 data-item-role>' + escapeHtml(item.role || 'Role') + '</h3><span data-item-company>' + escapeHtml(item.company) + '</span><p data-item-period>' + escapeHtml(item.start_date || '') + (item.current_job ? ' — Present' : (item.end_date ? ' — ' + escapeHtml(item.end_date) : '')) + '</p><p data-item-description>' + escapeHtml(item.description) + '</p></article>'; }).join('')) +
             section('Education', 'education', education.map(function (item) { return '<article class="timeline-item" data-education data-institution="' + escapeHtml(item.institution) + '" data-degree="' + escapeHtml(item.degree) + '" data-study-field="' + escapeHtml(item.field) + '" data-description="' + escapeHtml(item.description) + '" data-start-date="' + escapeHtml(item.start_date) + '" data-end-date="' + escapeHtml(item.end_date) + '"><h3 data-item-degree>' + escapeHtml(item.degree || 'Degree or course') + '</h3><span data-item-institution>' + escapeHtml(item.institution) + '</span><span data-item-study-field>' + escapeHtml(item.field) + '</span><p data-item-period>' + escapeHtml(item.start_date || '') + (item.end_date ? ' — ' + escapeHtml(item.end_date) : '') + '</p><p data-item-description>' + escapeHtml(item.description) + '</p></article>'; }).join('')) +
@@ -313,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const row = document.querySelectorAll('#projects-rows [data-row]')[index];
             const file = row?.querySelector('input[type="file"]')?.files[0];
             const path = row?.querySelector('.current-image-path')?.value;
-            const imageUrl = file ? filePreviewUrl(file) : (path ? storageBase + path : '');
+            const imageUrl = file ? filePreviewUrl(file) : (path ? storageBase + path : fallbackImage);
             result = result.replaceAll('%%PROJECT_' + index + '%%', escapeHtml(imageUrl));
         });
 
@@ -359,6 +409,7 @@ document.addEventListener('DOMContentLoaded', function () {
             row.querySelectorAll('[data-item-field]').forEach(function (input) {
                 const key = input.dataset.itemField;
                 if (key === 'id' || key === 'image') return;
+                if (type === 'skills' && key === 'category') addSkillCategoryOption(item[key]);
                 if (key === 'current_job') input.checked = item[key] === true || item[key] === '1';
                 else if (item[key] !== undefined && input.value !== String(item[key] ?? '')) input.value = item[key] ?? '';
             });
@@ -526,6 +577,22 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', function () { addRow(button.dataset.addRow); });
     });
 
+    document.getElementById('add-skill-category')?.addEventListener('click', function () {
+        const input = document.getElementById('new-skill-category');
+        const status = document.getElementById('skill-category-status');
+        const category = input.value.trim();
+
+        if (!category) {
+            status.textContent = 'Enter a category name first.';
+            input.focus();
+            return;
+        }
+
+        addSkillCategoryOption(category);
+        status.textContent = 'Category added. Choose it from a skill category list.';
+        input.value = '';
+    });
+
     form.addEventListener('click', function (event) {
         const removeButton = event.target.closest('.remove-row');
         if (removeButton) {
@@ -552,7 +619,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     form.addEventListener('change', function (event) {
-        if (!event.target.matches('input[type="file"]')) return;
+        if (!event.target.matches('input[type="file"]')) {
+            updateCodeFromForm(false);
+            updatePreview();
+            return;
+        }
         const file = event.target.files[0];
         const previewImage = event.target.closest('.field')?.querySelector('.upload-preview');
         if (file && previewImage) {
@@ -610,7 +681,7 @@ document.addEventListener('DOMContentLoaded', function () {
             codeBox.value = '<!doctype html>\n' + savedPage.documentElement.outerHTML;
         } else if (savedMain) {
             const savedStyle = savedPage.querySelector('style');
-            if (savedStyle && !savedStyle.textContent.includes('main.page[data-design] > .hero')) {
+            if (savedStyle && !savedStyle.textContent.includes('.skill-group')) {
                 savedStyle.textContent += unboxedDesignCss;
                 codeBox.value = '<!doctype html>\n' + savedPage.documentElement.outerHTML;
             }
@@ -618,5 +689,6 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
         codeBox.value = generateHtml();
     }
+    updateCodeFromForm(false);
     updatePreview();
 });

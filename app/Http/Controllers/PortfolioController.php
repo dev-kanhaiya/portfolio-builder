@@ -71,10 +71,28 @@ class PortfolioController extends Controller
             ->with(['profile', 'skills', 'projects', 'experiences', 'education'])
             ->findOrFail($id);
 
+        $skillCategories = [
+            'Backend',
+            'Frontend',
+            'Databases',
+            'DevOps & Deployment',
+            'Concepts',
+            'Tools',
+            'Design',
+            'Other',
+        ];
+
+        foreach ($portfolio->skills->pluck('category')->filter()->unique() as $category) {
+            if (! in_array($category, $skillCategories, true)) {
+                $skillCategories[] = $category;
+            }
+        }
+
         return view('portfolio.editor', [
             'portfolio' => $portfolio,
             'themes' => $this->themes,
             'designs' => $this->designs,
+            'skillCategories' => $skillCategories,
         ]);
     }
 
@@ -420,7 +438,9 @@ class PortfolioController extends Controller
         $html = str_replace('%%COVER%%', e($coverUrl), $html);
 
         foreach ($portfolio->projects as $index => $project) {
-            $imageUrl = $project->image_path ? asset('storage/'.$project->image_path) : '';
+            $imageUrl = $project->image_path && Storage::disk('public')->exists($project->image_path)
+                ? asset('storage/'.$project->image_path)
+                : asset('images/project-placeholder.svg');
             $html = str_replace('%%PROJECT_'.$index.'%%', e($imageUrl), $html);
         }
 

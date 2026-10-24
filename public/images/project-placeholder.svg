@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" fill="none">
+  <defs>
+    <linearGradient id="background" x1="48" y1="34" x2="748" y2="480" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F1EEFF"/>
+      <stop offset="1" stop-color="#E8F3FF"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="280" y1="130" x2="534" y2="382" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8B7CF6"/>
+      <stop offset="1" stop-color="#5B8FE8"/>
+    </linearGradient>
+    <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.5" fill="#9B96C9" fill-opacity=".2"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="500" rx="28" fill="url(#background)"/>
+  <rect width="800" height="500" rx="28" fill="url(#dots)"/>
+  <circle cx="680" cy="94" r="112" fill="#FFF" fill-opacity=".48"/>
+  <circle cx="92" cy="414" r="118" fill="#D9F3EF" fill-opacity=".58"/>
+  <rect x="153" y="92" width="494" height="316" rx="23" fill="#FFF" fill-opacity=".9" stroke="#FFF" stroke-width="4"/>
+  <path d="M176 92h448a23 23 0 0 1 23 23v34H153v-34a23 23 0 0 1 23-23Z" fill="#F8F8FD"/>
+  <circle cx="183" cy="124" r="6" fill="#F19B9B"/>
+  <circle cx="205" cy="124" r="6" fill="#EBCB78"/>
+  <circle cx="227" cy="124" r="6" fill="#7FC9A1"/>
+  <rect x="258" y="118" width="180" height="12" rx="6" fill="#E6E7F0"/>
+  <rect x="193" y="178" width="168" height="190" rx="16" fill="#F6F4FF"/>
+  <rect x="217" y="203" width="58" height="58" rx="17" fill="url(#accent)"/>
+  <path d="m240 220-13 12 13 12m12-24 13 12-13 12" stroke="#FFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="217" y="282" width="116" height="11" rx="5.5" fill="#B5AFE8"/>
+  <rect x="217" y="306" width="90" height="8" rx="4" fill="#D5D3E8"/>
+  <rect x="217" y="329" width="70" height="21" rx="10.5" fill="#E7E4FF"/>
+  <rect x="386" y="184" width="220" height="18" rx="9" fill="#31364D" fill-opacity=".88"/>
+  <rect x="386" y="216" width="190" height="10" rx="5" fill="#B6B9C9"/>
+  <rect x="386" y="235" width="164" height="10" rx="5" fill="#D1D3DF"/>
+  <rect x="386" y="275" width="220" height="74" rx="14" fill="#F0F4FC"/>
+  <path d="M406 326c18-30 32-4 48-26 15-20 29-8 46-23 12-11 24-6 38-19" stroke="url(#accent)" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="538" cy="258" r="6" fill="#8375EC"/>
+</svg>

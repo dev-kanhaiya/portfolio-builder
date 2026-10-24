@@ -21,7 +21,7 @@
     @endif
 
     @if($portfolio->skills->isNotEmpty())
-        <section class="resume-section"><h2>Skills</h2><ul class="resume-skill-list">@foreach($portfolio->skills as $skill)<li><strong>{{ $skill->name }}</strong>@if($skill->category)<span> · {{ $skill->category }}</span>@endif</li>@endforeach</ul></section>
+        <section class="resume-section"><h2>Skills</h2><div class="resume-skill-groups">@foreach($portfolio->skills->groupBy(fn ($skill) => $skill->category ?: 'Other') as $category => $skills)<div class="resume-skill-group"><h3>{{ $category }}</h3><ul>@foreach($skills as $skill)<li>{{ $skill->name }}</li>@endforeach</ul></div>@endforeach</div></section>
     @endif
 
     @if($portfolio->experiences->isNotEmpty())
