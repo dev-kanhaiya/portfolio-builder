@@ -1,0 +1,40 @@
+# Laravel
+/vendor/
+/node_modules/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Laravel generated files
+/public/build
+/public/hot
+/storage/*.key
+/public/storage
+/database/database.sqlite
+
+# Laravel logs/cache
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/bootstrap/cache/*
+
+# PHPUnit
+.phpunit.result.cache
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+
+# NPM
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vite
+vite.config.js.timestamp-*
