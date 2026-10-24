@@ -21,7 +21,16 @@
     @endif
 
     @if($portfolio->skills->isNotEmpty())
-        <section class="resume-section"><h2>Technical Skills</h2><div class="resume-skill-groups">@foreach($portfolio->skills->groupBy(fn ($skill) => $skill->category ?: 'Other') as $category => $skills)<div class="resume-skill-group"><h3>{{ $category }}</h3><ul>@foreach($skills as $skill)<li>{{ $skill->name }}</li>@endforeach</ul></div>@endforeach</div></section>
+        <section class="resume-section">
+            <h2>Technical Skills</h2>
+            <div class="resume-skill-groups">
+                @foreach($portfolio->skills->groupBy(fn ($skill) => $skill->category ?: 'Other') as $category => $skills)
+                    <p class="resume-skill-group"><strong>{{ $category }}:</strong>
+                        @foreach($skills as $skill){{ $skill->name }}@if(!$loop->last), @endif @endforeach
+                    </p>
+                @endforeach
+            </div>
+        </section>
     @endif
 
     @if($portfolio->experiences->isNotEmpty())
