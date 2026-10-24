@@ -96,6 +96,79 @@ class PortfolioController extends Controller
         ]);
     }
 
+    public function download(int $id): RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        $portfolio = auth()->user()->portfolios()
+            ->with(['profile', 'projects'])
+            ->findOrFail($id);
+
+        if (blank($portfolio->custom_html)) {
+            return redirect()->route('portfolio.edit', $portfolio)
+                ->with('error', 'Save your portfolio details before downloading it.');
+        }
+
+        if (! class_exists(\ZipArchive::class)) {
+            return back()->with('error', 'ZIP download needs the PHP ZIP extension enabled on the server.');
+        }
+
+        $temporaryFile = tempnam(sys_get_temp_dir(), 'portfolio-');
+        $zip = new \ZipArchive();
+
+        if ($temporaryFile === false || $zip->open($temporaryFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            if ($temporaryFile !== false) {
+                @unlink($temporaryFile);
+            }
+
+            return back()->with('error', 'The portfolio ZIP could not be created. Please try again.');
+        }
+
+        $addImage = function (?string $imagePath, string $fileName) use ($zip): ?string {
+            if (! $imagePath || ! Storage::disk('public')->exists($imagePath)) {
+                return null;
+            }
+
+            $extension = strtolower(pathinfo($imagePath, PATHINFO_EXTENSION));
+            $extension = in_array($extension, ['jpg', 'jpeg', 'png', 'webp'], true) ? $extension : 'webp';
+            $archivePath = 'assets/'.$fileName.'.'.$extension;
+
+            if (! $zip->addFromString($archivePath, Storage::disk('public')->get($imagePath))) {
+                return null;
+            }
+
+            return $archivePath;
+        };
+
+        $html = $portfolio->custom_html;
+        $avatarPath = $addImage($portfolio->profile?->avatar_path, 'profile');
+        $coverPath = $addImage($portfolio->profile?->cover_path, 'cover');
+
+        $html = str_replace('%%AVATAR%%', e($avatarPath ?? ''), $html);
+        $html = str_replace('%%COVER%%', e($coverPath ?? ''), $html);
+
+        $placeholderPath = 'assets/project-placeholder.svg';
+        $placeholderFile = public_path('images/project-placeholder.svg');
+        $placeholderAdded = false;
+
+        foreach ($portfolio->projects as $index => $project) {
+            $imagePath = $addImage($project->image_path, 'project-'.$index);
+
+            if (! $imagePath && ! $placeholderAdded && is_file($placeholderFile)) {
+                $zip->addFile($placeholderFile, $placeholderPath);
+                $placeholderAdded = true;
+            }
+
+            $html = str_replace('%%PROJECT_'.$index.'%%', e($imagePath ?? $placeholderPath), $html);
+        }
+
+        $zip->addFromString('index.html', $html);
+        $zip->addFromString('README.txt', "Extract this ZIP, then open index.html in a browser.\n");
+        $zip->close();
+
+        return response()->download($temporaryFile, (Str::slug($portfolio->title) ?: 'portfolio').'.zip', [
+            'Content-Type' => 'application/zip',
+        ])->deleteFileAfterSend(true);
+    }
+
     public function update(Request $request, int $id): RedirectResponse
     {
         $portfolio = auth()->user()->portfolios()

@@ -19,6 +19,7 @@
                             <h3>{{ $portfolio->title }}</h3><p class="portfolio-url">{{ url('/p/'.$portfolio->slug) }}</p>
                             <div class="card-actions">
                                 <a class="button button-small" href="{{ route('portfolio.edit', $portfolio) }}">Edit portfolio</a>
+                                <a class="plain-link" href="{{ route('portfolio.download', $portfolio) }}">Download ZIP ↓</a>
                                 <a class="plain-link" href="{{ route('portfolio.resume-preview', $portfolio) }}" target="_blank" rel="noopener">Resume PDF ↗</a>
                                 @if($portfolio->is_published)<a class="plain-link" href="{{ route('portfolio.public', $portfolio->slug) }}" target="_blank" rel="noopener">View ↗</a>@endif
                             </div>

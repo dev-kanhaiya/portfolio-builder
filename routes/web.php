@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [PortfolioController::class, 'dashboard'])->name('dashboard');
     Route::post('/portfolios', [PortfolioController::class, 'store'])->name('portfolio.store');
     Route::get('/portfolios/{id}/edit', [PortfolioController::class, 'edit'])->name('portfolio.edit');
+    Route::get('/portfolios/{id}/download', [PortfolioController::class, 'download'])->name('portfolio.download');
     Route::get('/portfolios/{id}/resume-preview', [PortfolioController::class, 'resumePreview'])->name('portfolio.resume-preview');
     Route::put('/portfolios/{id}', [PortfolioController::class, 'update'])->name('portfolio.update');
     Route::post('/portfolios/{id}/clone', [PortfolioController::class, 'clone'])->name('portfolio.clone');

@@ -6,6 +6,7 @@
     <div class="editor-title"><a class="back-link" href="{{ route('dashboard') }}">← Dashboard</a><div><span class="eyebrow">PORTFOLIO EDITOR</span><h1>{{ $portfolio->title }}</h1></div></div>
     <div class="editor-actions">
         @if($portfolio->is_published)<a class="button button-light button-small" href="{{ route('portfolio.public', $portfolio->slug) }}" target="_blank" rel="noopener">View live ↗</a>@endif
+        <a class="button button-light button-small" href="{{ route('portfolio.download', $portfolio) }}">Download ZIP ↓</a>
         <button class="button button-light button-small" id="toggle-sidebar" type="button">Hide editor</button>
         <button class="button button-small" type="submit" form="portfolio-form">Save changes <span>✓</span></button>
     </div>
