@@ -10,6 +10,7 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withCommands()
     ->withMiddleware(function (Middleware $middleware): void {
         // Keep Laravel's default web middleware for sessions and CSRF protection.
     })
