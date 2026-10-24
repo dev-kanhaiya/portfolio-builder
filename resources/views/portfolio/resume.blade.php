@@ -17,26 +17,25 @@
     </header>
 
     @if($portfolio->profile?->bio)
-        <section class="resume-section"><h2>Professional Summary</h2><p>{{ $portfolio->profile->bio }}</p></section>
+        <section class="resume-section"><h2>Summary</h2><p>{{ $portfolio->profile->bio }}</p></section>
     @endif
 
-    <div class="resume-print-columns">
     @if($portfolio->skills->isNotEmpty())
-        <section class="resume-section"><h2>Skills</h2><div class="resume-skill-groups">@foreach($portfolio->skills->groupBy(fn ($skill) => $skill->category ?: 'Other') as $category => $skills)<div class="resume-skill-group"><h3>{{ $category }}</h3><ul>@foreach($skills as $skill)<li>{{ $skill->name }}</li>@endforeach</ul></div>@endforeach</div></section>
+        <section class="resume-section"><h2>Technical Skills</h2><div class="resume-skill-groups">@foreach($portfolio->skills->groupBy(fn ($skill) => $skill->category ?: 'Other') as $category => $skills)<div class="resume-skill-group"><h3>{{ $category }}</h3><ul>@foreach($skills as $skill)<li>{{ $skill->name }}</li>@endforeach</ul></div>@endforeach</div></section>
     @endif
 
     @if($portfolio->experiences->isNotEmpty())
-        <section class="resume-section"><h2>Experience</h2>
+        <section class="resume-section"><h2>Professional Experience</h2>
             @foreach($portfolio->experiences as $experience)
-                <article class="resume-item"><div class="resume-item-heading"><div><h3>{{ $experience->role }}</h3><p>{{ $experience->company }}</p></div><span>@if($experience->start_date){{ \Carbon\Carbon::parse($experience->start_date)->format('M Y') }}@endif – @if($experience->current_job)Present @elseif($experience->end_date){{ \Carbon\Carbon::parse($experience->end_date)->format('M Y') }}@endif</span></div>@if($experience->description)<p>{{ $experience->description }}</p>@endif</article>
+                <article class="resume-item resume-experience-item"><div class="resume-item-heading"><div><h3>{{ $experience->role }}</h3><p>{{ $experience->company }}</p></div><span>@if($experience->start_date){{ \Carbon\Carbon::parse($experience->start_date)->format('M Y') }}@endif – @if($experience->current_job)Present @elseif($experience->end_date){{ \Carbon\Carbon::parse($experience->end_date)->format('M Y') }}@endif</span></div>@if($experience->description)<p>{{ $experience->description }}</p>@endif</article>
             @endforeach
         </section>
     @endif
 
     @if($portfolio->projects->isNotEmpty())
-        <section class="resume-section"><h2>Projects</h2>
+        <section class="resume-section"><h2>Key Projects</h2>
             @foreach($portfolio->projects as $project)
-                <article class="resume-item">
+                <article class="resume-item resume-project-item">
                     <div class="resume-item-heading">
                         <div>
                             <h3>{{ $project->title }}</h3>
@@ -69,7 +68,6 @@
             @endforeach
         </section>
     @endif
-    </div>
 </main>
 <p class="resume-note">Use the browser's print dialog and choose “Save as PDF”. The page uses a simple, text-first layout for applicant tracking systems.</p>
 @endsection
