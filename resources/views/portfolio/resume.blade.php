@@ -20,6 +20,7 @@
         <section class="resume-section"><h2>Professional Summary</h2><p>{{ $portfolio->profile->bio }}</p></section>
     @endif
 
+    <div class="resume-print-columns">
     @if($portfolio->skills->isNotEmpty())
         <section class="resume-section"><h2>Skills</h2><div class="resume-skill-groups">@foreach($portfolio->skills->groupBy(fn ($skill) => $skill->category ?: 'Other') as $category => $skills)<div class="resume-skill-group"><h3>{{ $category }}</h3><ul>@foreach($skills as $skill)<li>{{ $skill->name }}</li>@endforeach</ul></div>@endforeach</div></section>
     @endif
@@ -68,6 +69,7 @@
             @endforeach
         </section>
     @endif
+    </div>
 </main>
 <p class="resume-note">Use the browser's print dialog and choose “Save as PDF”. The page uses a simple, text-first layout for applicant tracking systems.</p>
 @endsection
