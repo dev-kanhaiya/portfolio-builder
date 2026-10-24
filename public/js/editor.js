@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', function () {
         main.page .skill-list { gap: 18px; }
         main.page .skill-group { display: grid; grid-template-columns: minmax(125px, .32fr) 1fr; align-items: start; gap: 18px; padding: 0 0 18px; border-bottom: 1px solid var(--line); }
         main.page .skill-group:last-child { padding-bottom: 0; border-bottom: 0; }
-        main.page .skill-group-title { margin: 5px 0 0; color: var(--muted); font-size: 11px; letter-spacing: .1em; line-height: 1.5; text-transform: uppercase; }
+        main.page .skill-group-title { margin: 5px 0 0; color: var(--text); font-size: 12px; font-weight: 800; letter-spacing: .08em; line-height: 1.5; text-transform: uppercase; }
         main.page .skill-chips { display: flex; flex-wrap: wrap; gap: 9px; }
         main.page .skill-chip { display: inline-flex; align-items: center; gap: 11px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); }
         main.page .skill-chip b { font-size: 13px; }
